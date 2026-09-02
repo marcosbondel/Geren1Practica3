@@ -1,0 +1,10 @@
+# El build corre en Vercel: no hace falta subir dependencias ni artefactos
+# locales, y la caché de `next dev` llega a pesar cientos de megabytes.
+node_modules
+.next
+
+# Artefactos de Playwright
+test-results
+playwright-report
+blob-report
+playwright/.cache
