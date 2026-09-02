@@ -4,8 +4,8 @@ import Link from "next/link";
 import { MinusIcon, PlusIcon, ShoppingCartIcon, Trash2Icon } from "lucide-react";
 import { useCarrito } from "@/components/cart-provider";
 import { ProductIllustration } from "@/components/product-illustration";
+import { Resumen } from "@/components/resumen";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -32,8 +32,8 @@ export function CartSheet() {
   return (
     <Sheet open={abierto} onOpenChange={setAbierto}>
       <SheetContent className="flex w-full flex-col gap-0 sm:max-w-md">
-        <SheetHeader className="border-b">
-          <SheetTitle className="flex items-center gap-2">
+        <SheetHeader className="border-b border-border">
+          <SheetTitle className="flex items-center gap-2 text-base">
             <ShoppingCartIcon className="size-4" />
             Tu carrito
           </SheetTitle>
@@ -45,11 +45,11 @@ export function CartSheet() {
         </SheetHeader>
 
         {detalle.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-            <div className="grid size-14 place-items-center rounded-full bg-muted">
-              <ShoppingCartIcon className="size-6 text-muted-foreground" />
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+            <div className="grid size-12 place-items-center rounded-xl border border-border">
+              <ShoppingCartIcon className="size-5 text-muted-foreground" />
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground text-pretty">
               Explora el catálogo y agrega el producto que necesites.
             </p>
             <Button asChild variant="outline" onClick={() => setAbierto(false)}>
@@ -58,36 +58,43 @@ export function CartSheet() {
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto px-4 py-4">
-              <ul className="flex flex-col gap-4">
+            <div className="flex-1 overflow-y-auto px-5">
+              <ul>
                 {detalle.map(({ producto, cantidad, importe }) => (
-                  <li key={producto.slug} className="flex gap-3">
-                    <div className="size-16 shrink-0 overflow-hidden rounded-md border bg-muted">
+                  <li
+                    key={producto.slug}
+                    className="flex gap-3.5 border-b border-border py-4 last:border-b-0"
+                  >
+                    <div className="size-16 shrink-0 overflow-hidden rounded-md bg-card ring-1 ring-border">
                       <ProductIllustration slug={producto.slug} />
                     </div>
                     <div className="min-w-0 flex-1">
                       <Link
                         href={`/productos/${producto.slug}`}
                         onClick={() => setAbierto(false)}
-                        className="text-sm font-medium leading-tight hover:underline"
+                        className="font-heading text-sm leading-tight font-medium tracking-[-0.02em] decoration-1 underline-offset-4 hover:underline"
                       >
                         {producto.nombre}
                       </Link>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        {producto.modalidadLabel}
+                      <p className="label-tec mt-1.5 text-muted-foreground">
+                        {producto.modalidad === "descarga"
+                          ? "Descarga"
+                          : "En línea"}
                       </p>
-                      <div className="mt-2 flex items-center gap-2">
-                        <div className="flex items-center rounded-md border">
+                      <div className="mt-2.5 flex items-center gap-2">
+                        <div className="flex items-center rounded-md border border-border">
                           <Button
                             variant="ghost"
                             size="icon"
                             className="size-7 rounded-r-none"
                             aria-label={`Quitar una unidad de ${producto.nombre}`}
-                            onClick={() => actualizar(producto.slug, cantidad - 1)}
+                            onClick={() =>
+                              actualizar(producto.slug, cantidad - 1)
+                            }
                           >
                             <MinusIcon className="size-3" />
                           </Button>
-                          <span className="w-7 text-center text-sm tabular-nums">
+                          <span className="cifra w-7 text-center text-sm">
                             {cantidad}
                           </span>
                           <Button
@@ -95,7 +102,9 @@ export function CartSheet() {
                             size="icon"
                             className="size-7 rounded-l-none"
                             aria-label={`Agregar una unidad de ${producto.nombre}`}
-                            onClick={() => actualizar(producto.slug, cantidad + 1)}
+                            onClick={() =>
+                              actualizar(producto.slug, cantidad + 1)
+                            }
                           >
                             <PlusIcon className="size-3" />
                           </Button>
@@ -111,7 +120,7 @@ export function CartSheet() {
                         </Button>
                       </div>
                     </div>
-                    <div className="text-right text-sm font-medium tabular-nums">
+                    <div className="cifra text-right text-sm font-medium">
                       {quetzales(importe)}
                     </div>
                   </li>
@@ -119,32 +128,21 @@ export function CartSheet() {
               </ul>
             </div>
 
-            <SheetFooter className="gap-3 border-t">
-              <dl className="flex flex-col gap-1.5 text-sm">
-                <div className="flex justify-between text-muted-foreground">
-                  <dt>Subtotal</dt>
-                  <dd className="tabular-nums">{quetzales(subtotal)}</dd>
-                </div>
-                <div className="flex justify-between text-muted-foreground">
-                  <dt>IVA (12%)</dt>
-                  <dd className="tabular-nums">{quetzales(iva)}</dd>
-                </div>
-                <Separator className="my-1" />
-                <div className="flex justify-between text-base font-semibold">
-                  <dt>Total</dt>
-                  <dd className="tabular-nums">{quetzales(total)}</dd>
-                </div>
-              </dl>
-              <Button asChild size="lg" onClick={() => setAbierto(false)}>
-                <Link href="/checkout">Continuar al pago</Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                onClick={() => setAbierto(false)}
-              >
-                <Link href="/carrito">Ver carrito completo</Link>
-              </Button>
+            <SheetFooter className="gap-4 border-t border-border">
+              <Resumen subtotal={subtotal} iva={iva} total={total} />
+              <div className="flex flex-col gap-2.5">
+                <Button asChild className="h-11" onClick={() => setAbierto(false)}>
+                  <Link href="/checkout">Continuar al pago</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-11"
+                  onClick={() => setAbierto(false)}
+                >
+                  <Link href="/carrito">Ver carrito completo</Link>
+                </Button>
+              </div>
             </SheetFooter>
           </>
         )}

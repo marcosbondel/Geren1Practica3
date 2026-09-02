@@ -4,8 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  BuildingIcon,
-  CreditCardIcon,
   InfoIcon,
   Loader2Icon,
   LockIcon,
@@ -14,9 +12,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCarrito } from "@/components/cart-provider";
+import { Ficha, Rotulo } from "@/components/ficha";
 import { ProductIllustration } from "@/components/product-illustration";
+import { Resumen } from "@/components/resumen";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -26,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { quetzales } from "@/lib/format";
 import {
@@ -216,18 +214,16 @@ export default function CheckoutPage() {
   if (detalle.length === 0) {
     return (
       <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
-        <div className="mx-auto flex max-w-md flex-col items-center gap-4 text-center">
-          <div className="grid size-16 place-items-center rounded-full bg-muted">
-            <ShoppingCartIcon className="size-7 text-muted-foreground" />
+        <div className="mx-auto flex max-w-md flex-col items-center gap-5 text-center">
+          <div className="grid size-14 place-items-center rounded-xl border border-border">
+            <ShoppingCartIcon className="size-6 text-muted-foreground" />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            No hay nada que pagar
-          </h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-semibold">No hay nada que pagar</h1>
+          <p className="text-muted-foreground text-pretty">
             Tu carrito está vacío. Agrega un producto para poder simular la
             compra.
           </p>
-          <Button asChild size="lg">
+          <Button asChild className="h-11 px-5">
             <Link href="/productos">Ir al catálogo</Link>
           </Button>
         </div>
@@ -236,28 +232,30 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
       <header>
-        <h1 className="text-3xl font-semibold tracking-tight">Checkout</h1>
-        <p className="mt-1 text-muted-foreground">
-          Paso final: datos de facturación y método de pago.
-        </p>
+        <Rotulo contador="Paso final">Checkout</Rotulo>
+        <h1 className="mt-6 text-4xl font-semibold">
+          Datos de facturación y pago
+        </h1>
       </header>
 
-      <div className="mt-6 flex flex-wrap items-start gap-3 rounded-lg border border-primary/25 bg-primary/5 p-4 text-sm">
+      <div className="mt-8 flex flex-wrap items-start gap-4 rounded-xl border border-primary/25 bg-primary/5 p-5 text-sm">
         <InfoIcon className="mt-0.5 size-4 shrink-0 text-primary" />
-        <div className="flex-1">
+        <div className="min-w-56 flex-1">
           <p className="font-medium">Compra simulada</p>
-          <p className="mt-1 text-muted-foreground">
+          <p className="mt-1.5 leading-relaxed text-muted-foreground">
             Esta tienda es una demostración académica: no se procesa ningún
             cobro real ni se transmiten los datos a ninguna pasarela. Usa la
-            tarjeta de prueba <code className="font-mono">4242 4242 4242 4242</code>.
+            tarjeta de prueba{" "}
+            <code className="cifra text-foreground">4242 4242 4242 4242</code>.
           </p>
         </div>
         <Button
           type="button"
           variant="outline"
           size="sm"
+          className="h-9"
           onClick={() => {
             setForm(PRUEBA);
             setErrores({});
@@ -269,257 +267,243 @@ export default function CheckoutPage() {
         </Button>
       </div>
 
-      <form onSubmit={confirmar} className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardContent className="flex flex-col gap-5">
-              <div className="flex items-center gap-2">
-                <BuildingIcon className="size-4 text-primary" />
-                <h2 className="text-lg font-semibold">Datos de facturación</h2>
-              </div>
+      <form
+        onSubmit={confirmar}
+        className="mt-12 grid gap-12 lg:grid-cols-[1fr_360px]"
+      >
+        <div className="flex flex-col gap-12">
+          <section>
+            <Rotulo>Datos de facturación</Rotulo>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              <Campo
+                id="nombre"
+                etiqueta="Nombre completo"
+                valor={form.nombre}
+                error={errores.nombre}
+                onChange={(v) => set("nombre", v)}
+                placeholder="Ana Lucía Rodríguez"
+                autoComplete="name"
+              />
+              <Campo
+                id="correo"
+                etiqueta="Correo electrónico"
+                tipo="email"
+                valor={form.correo}
+                error={errores.correo}
+                onChange={(v) => set("correo", v)}
+                placeholder="nombre@empresa.gt"
+                autoComplete="email"
+              />
+              <Campo
+                id="telefono"
+                etiqueta="Teléfono"
+                valor={form.telefono}
+                error={errores.telefono}
+                onChange={(v) => set("telefono", v)}
+                placeholder="5512 8834"
+                autoComplete="tel"
+              />
+              <Campo
+                id="empresa"
+                etiqueta="Empresa (opcional)"
+                valor={form.empresa}
+                onChange={(v) => set("empresa", v)}
+                placeholder="Distribuidora La Ceiba, S.A."
+                autoComplete="organization"
+              />
+              <Campo
+                id="nit"
+                etiqueta="NIT"
+                valor={form.nit}
+                error={errores.nit}
+                onChange={(v) => set("nit", v)}
+                placeholder="4839201-6 o CF"
+              />
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="departamento" className="label-tec text-muted-foreground">
+                  Departamento
+                </Label>
+                <Select
+                  value={form.departamento}
+                  onValueChange={(v) => set("departamento", v)}
+                >
+                  <SelectTrigger id="departamento" className="h-10 w-full">
+                    <SelectValue placeholder="Selecciona" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEPARTAMENTOS.map((d) => (
+                      <SelectItem key={d} value={d}>
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errores.departamento && (
+                  <p className="text-xs text-destructive">
+                    {errores.departamento}
+                  </p>
+                )}
+              </div>
+              <div className="sm:col-span-2">
                 <Campo
-                  id="nombre"
-                  etiqueta="Nombre completo"
-                  valor={form.nombre}
-                  error={errores.nombre}
-                  onChange={(v) => set("nombre", v)}
-                  placeholder="Ana Lucía Rodríguez"
-                  autoComplete="name"
+                  id="direccion"
+                  etiqueta="Dirección de facturación"
+                  valor={form.direccion}
+                  error={errores.direccion}
+                  onChange={(v) => set("direccion", v)}
+                  placeholder="12 calle 3-45 zona 10, oficina 502"
+                  autoComplete="street-address"
                 />
-                <Campo
-                  id="correo"
-                  etiqueta="Correo electrónico"
-                  tipo="email"
-                  valor={form.correo}
-                  error={errores.correo}
-                  onChange={(v) => set("correo", v)}
-                  placeholder="nombre@empresa.gt"
-                  autoComplete="email"
-                />
-                <Campo
-                  id="telefono"
-                  etiqueta="Teléfono"
-                  valor={form.telefono}
-                  error={errores.telefono}
-                  onChange={(v) => set("telefono", v)}
-                  placeholder="5512 8834"
-                  autoComplete="tel"
-                />
-                <Campo
-                  id="empresa"
-                  etiqueta="Empresa (opcional)"
-                  valor={form.empresa}
-                  onChange={(v) => set("empresa", v)}
-                  placeholder="Distribuidora La Ceiba, S.A."
-                  autoComplete="organization"
-                />
-                <Campo
-                  id="nit"
-                  etiqueta="NIT"
-                  valor={form.nit}
-                  error={errores.nit}
-                  onChange={(v) => set("nit", v)}
-                  placeholder="4839201-6 o CF"
-                />
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="departamento">Departamento</Label>
-                  <Select
-                    value={form.departamento}
-                    onValueChange={(v) => set("departamento", v)}
-                  >
-                    <SelectTrigger id="departamento" className="w-full">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DEPARTAMENTOS.map((d) => (
-                        <SelectItem key={d} value={d}>
-                          {d}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errores.departamento && (
-                    <p className="text-xs text-destructive">
-                      {errores.departamento}
-                    </p>
-                  )}
-                </div>
-                <div className="sm:col-span-2">
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <Rotulo>Método de pago</Rotulo>
+
+            <Tabs
+              value={metodo}
+              onValueChange={(v) => setMetodo(v as typeof metodo)}
+              className="mt-6"
+            >
+              <TabsList>
+                <TabsTrigger value="tarjeta">Tarjeta</TabsTrigger>
+                <TabsTrigger value="transferencia">Transferencia</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="tarjeta" className="mt-6">
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="sm:col-span-2">
+                    <Campo
+                      id="titular"
+                      etiqueta="Nombre en la tarjeta"
+                      valor={form.titular}
+                      error={errores.titular}
+                      onChange={(v) => set("titular", v.toUpperCase())}
+                      placeholder="ANA L RODRIGUEZ"
+                      autoComplete="cc-name"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <Campo
+                      id="tarjeta"
+                      etiqueta="Número de tarjeta"
+                      valor={form.tarjeta}
+                      error={errores.tarjeta}
+                      onChange={(v) => set("tarjeta", formatearTarjeta(v))}
+                      placeholder="4242 4242 4242 4242"
+                      inputMode="numeric"
+                      autoComplete="cc-number"
+                      className="cifra"
+                    />
+                  </div>
                   <Campo
-                    id="direccion"
-                    etiqueta="Dirección de facturación"
-                    valor={form.direccion}
-                    error={errores.direccion}
-                    onChange={(v) => set("direccion", v)}
-                    placeholder="12 calle 3-45 zona 10, oficina 502"
-                    autoComplete="street-address"
+                    id="vence"
+                    etiqueta="Vencimiento"
+                    valor={form.vence}
+                    error={errores.vence}
+                    onChange={(v) => set("vence", formatearVence(v))}
+                    placeholder="MM/AA"
+                    inputMode="numeric"
+                    autoComplete="cc-exp"
+                    className="cifra"
+                  />
+                  <Campo
+                    id="cvv"
+                    etiqueta="CVV"
+                    valor={form.cvv}
+                    error={errores.cvv}
+                    onChange={(v) => set("cvv", soloDigitos(v).slice(0, 3))}
+                    placeholder="123"
+                    inputMode="numeric"
+                    autoComplete="cc-csc"
+                    className="cifra"
                   />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </TabsContent>
 
-          <Card>
-            <CardContent className="flex flex-col gap-5">
-              <div className="flex items-center gap-2">
-                <CreditCardIcon className="size-4 text-primary" />
-                <h2 className="text-lg font-semibold">Método de pago</h2>
-              </div>
-
-              <Tabs
-                value={metodo}
-                onValueChange={(v) => setMetodo(v as typeof metodo)}
-              >
-                <TabsList>
-                  <TabsTrigger value="tarjeta">Tarjeta</TabsTrigger>
-                  <TabsTrigger value="transferencia">Transferencia</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="tarjeta" className="mt-5">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="sm:col-span-2">
-                      <Campo
-                        id="titular"
-                        etiqueta="Nombre en la tarjeta"
-                        valor={form.titular}
-                        error={errores.titular}
-                        onChange={(v) => set("titular", v.toUpperCase())}
-                        placeholder="ANA L RODRIGUEZ"
-                        autoComplete="cc-name"
-                      />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <Campo
-                        id="tarjeta"
-                        etiqueta="Número de tarjeta"
-                        valor={form.tarjeta}
-                        error={errores.tarjeta}
-                        onChange={(v) => set("tarjeta", formatearTarjeta(v))}
-                        placeholder="4242 4242 4242 4242"
-                        inputMode="numeric"
-                        autoComplete="cc-number"
-                      />
-                    </div>
-                    <Campo
-                      id="vence"
-                      etiqueta="Vencimiento"
-                      valor={form.vence}
-                      error={errores.vence}
-                      onChange={(v) => set("vence", formatearVence(v))}
-                      placeholder="MM/AA"
-                      inputMode="numeric"
-                      autoComplete="cc-exp"
-                    />
-                    <Campo
-                      id="cvv"
-                      etiqueta="CVV"
-                      valor={form.cvv}
-                      error={errores.cvv}
-                      onChange={(v) => set("cvv", soloDigitos(v).slice(0, 3))}
-                      placeholder="123"
-                      inputMode="numeric"
-                      autoComplete="cc-csc"
-                    />
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="transferencia" className="mt-5">
-                  <div className="rounded-lg border bg-muted/40 p-4 text-sm">
-                    <p className="font-medium">
-                      Transfiere a la cuenta de QuetzalDev
-                    </p>
-                    <dl className="mt-3 grid gap-2 sm:grid-cols-2">
-                      {[
-                        ["Banco", "Banco Industrial"],
-                        ["Tipo de cuenta", "Monetaria"],
-                        ["Número", "123-456789-0"],
-                        ["A nombre de", "QuetzalDev, S.A."],
-                      ].map(([k, v]) => (
-                        <div key={k} className="flex justify-between gap-4">
-                          <dt className="text-muted-foreground">{k}</dt>
-                          <dd className="font-medium">{v}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                    <p className="mt-3 text-muted-foreground">
-                      Al confirmar, recibirás la orden en estado{" "}
-                      <strong>pendiente de acreditación</strong> junto con las
-                      instrucciones para enviar tu comprobante.
-                    </p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
+              <TabsContent value="transferencia" className="mt-6">
+                <div className="rounded-xl bg-card p-5 text-sm ring-1 ring-border">
+                  <p className="font-medium">
+                    Transfiere a la cuenta de QuetzalDev
+                  </p>
+                  <Ficha
+                    className="mt-4 gap-2.5"
+                    filas={[
+                      { etiqueta: "Banco", valor: "Banco Industrial" },
+                      { etiqueta: "Tipo de cuenta", valor: "Monetaria" },
+                      { etiqueta: "Número", valor: "123-456789-0" },
+                      { etiqueta: "A nombre de", valor: "QuetzalDev, S.A." },
+                    ]}
+                  />
+                  <p className="mt-4 leading-relaxed text-muted-foreground">
+                    Al confirmar, recibirás la orden en estado{" "}
+                    <strong className="text-foreground">
+                      pendiente de acreditación
+                    </strong>{" "}
+                    junto con las instrucciones para enviar tu comprobante.
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </section>
         </div>
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <Card>
-            <CardContent className="flex flex-col gap-4">
-              <h2 className="text-lg font-semibold">Tu pedido</h2>
+          <div className="rounded-xl bg-card p-6 ring-1 ring-border">
+            <h2 className="label-tec text-muted-foreground">Tu pedido</h2>
 
-              <ul className="flex flex-col gap-3">
-                {detalle.map(({ producto, cantidad, importe }) => (
-                  <li key={producto.slug} className="flex items-center gap-3">
-                    <div className="size-12 shrink-0 overflow-hidden rounded-md border bg-muted">
-                      <ProductIllustration slug={producto.slug} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">
-                        {producto.nombre}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Cantidad: {cantidad}
-                      </p>
-                    </div>
-                    <span className="text-sm font-medium tabular-nums">
-                      {quetzales(importe)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+            <ul className="mt-5 flex flex-col">
+              {detalle.map(({ producto, cantidad, importe }) => (
+                <li
+                  key={producto.slug}
+                  className="flex items-center gap-3 border-b border-border py-3 first:pt-0"
+                >
+                  <div className="size-11 shrink-0 overflow-hidden rounded-md ring-1 ring-border">
+                    <ProductIllustration slug={producto.slug} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">
+                      {producto.nombre}
+                    </p>
+                    <p className="label-tec mt-1 text-muted-foreground">
+                      Cantidad {cantidad}
+                    </p>
+                  </div>
+                  <span className="cifra text-sm font-medium">
+                    {quetzales(importe)}
+                  </span>
+                </li>
+              ))}
+            </ul>
 
-              <Separator />
+            <Resumen
+              className="mt-5"
+              subtotal={subtotal}
+              iva={iva}
+              total={total}
+              etiquetaSubtotal={`Subtotal (${unidades} ${unidades === 1 ? "licencia" : "licencias"})`}
+            />
 
-              <dl className="flex flex-col gap-2 text-sm">
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">
-                    Subtotal ({unidades} {unidades === 1 ? "licencia" : "licencias"})
-                  </dt>
-                  <dd className="tabular-nums">{quetzales(subtotal)}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">IVA (12%)</dt>
-                  <dd className="tabular-nums">{quetzales(iva)}</dd>
-                </div>
-                <Separator className="my-1" />
-                <div className="flex justify-between text-lg font-semibold">
-                  <dt>Total</dt>
-                  <dd className="tabular-nums">{quetzales(total)}</dd>
-                </div>
-              </dl>
+            <Button type="submit" className="mt-6 h-11 w-full" disabled={procesando}>
+              {procesando ? (
+                <>
+                  <Loader2Icon className="size-4 animate-spin" />
+                  Procesando pago…
+                </>
+              ) : (
+                <>
+                  <LockIcon className="size-4" />
+                  Confirmar compra
+                </>
+              )}
+            </Button>
 
-              <Button type="submit" size="lg" disabled={procesando}>
-                {procesando ? (
-                  <>
-                    <Loader2Icon className="size-4 animate-spin" />
-                    Procesando pago…
-                  </>
-                ) : (
-                  <>
-                    <LockIcon className="size-4" />
-                    Confirmar compra
-                  </>
-                )}
-              </Button>
-
-              <p className="text-center text-xs text-muted-foreground">
-                Al confirmar aceptas los términos de licencia de QuetzalDev.
-              </p>
-            </CardContent>
-          </Card>
+            <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">
+              Al confirmar aceptas los términos de licencia de QuetzalDev.
+            </p>
+          </div>
         </aside>
       </form>
     </div>
@@ -544,10 +528,13 @@ function Campo({
 } & Omit<React.ComponentProps<typeof Input>, "onChange" | "value" | "id" | "type">) {
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor={id}>{etiqueta}</Label>
+      <Label htmlFor={id} className="label-tec text-muted-foreground">
+        {etiqueta}
+      </Label>
       <Input
         id={id}
         type={tipo}
+        className="h-10"
         value={valor}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}

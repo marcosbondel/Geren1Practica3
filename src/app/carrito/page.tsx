@@ -9,11 +9,10 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useCarrito } from "@/components/cart-provider";
+import { Rotulo } from "@/components/ficha";
 import { ProductIllustration } from "@/components/product-illustration";
-import { Badge } from "@/components/ui/badge";
+import { Resumen } from "@/components/resumen";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { quetzales } from "@/lib/format";
 
 export default function CarritoPage() {
@@ -40,19 +39,17 @@ export default function CarritoPage() {
 
   if (detalle.length === 0) {
     return (
-      <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
-        <div className="mx-auto flex max-w-md flex-col items-center gap-4 text-center">
-          <div className="grid size-16 place-items-center rounded-full bg-muted">
-            <ShoppingCartIcon className="size-7 text-muted-foreground" />
+      <div className="mx-auto w-full max-w-6xl px-4 py-24 sm:px-6">
+        <div className="mx-auto flex max-w-md flex-col items-center gap-5 text-center">
+          <div className="grid size-14 place-items-center rounded-xl border border-border">
+            <ShoppingCartIcon className="size-6 text-muted-foreground" />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Tu carrito está vacío
-          </h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-semibold">Tu carrito está vacío</h1>
+          <p className="text-muted-foreground text-pretty">
             Agrega alguno de nuestros tres productos para continuar con la
             compra.
           </p>
-          <Button asChild size="lg">
+          <Button asChild className="h-11 px-5">
             <Link href="/productos">Ir al catálogo</Link>
           </Button>
         </div>
@@ -61,136 +58,135 @@ export default function CarritoPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Tu carrito</h1>
-          <p className="mt-1 text-muted-foreground">
-            {unidades} {unidades === 1 ? "licencia" : "licencias"} ·{" "}
-            {detalle.length} {detalle.length === 1 ? "producto" : "productos"}
-          </p>
+          <Rotulo
+            contador={`${unidades} ${unidades === 1 ? "licencia" : "licencias"}`}
+          >
+            Carrito
+          </Rotulo>
+          <h1 className="mt-6 text-4xl font-semibold">Tu carrito</h1>
         </div>
-        <Button variant="ghost" onClick={vaciar} className="text-muted-foreground">
+        <Button
+          variant="ghost"
+          onClick={vaciar}
+          className="h-9 text-muted-foreground"
+        >
           <Trash2Icon className="size-4" />
           Vaciar carrito
         </Button>
       </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
-        <ul className="flex flex-col gap-4">
+      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px]">
+        <ul className="border-t border-border">
           {detalle.map(({ producto, cantidad, importe }) => (
-            <li key={producto.slug}>
-              <Card>
-                <CardContent className="flex flex-col gap-4 sm:flex-row">
-                  <Link
-                    href={`/productos/${producto.slug}`}
-                    className="h-28 w-full shrink-0 overflow-hidden rounded-lg border bg-muted sm:w-44"
-                  >
-                    <ProductIllustration slug={producto.slug} />
-                  </Link>
+            <li
+              key={producto.slug}
+              className="flex flex-col gap-5 border-b border-border py-6 sm:flex-row"
+            >
+              <Link
+                href={`/productos/${producto.slug}`}
+                className="h-24 w-full shrink-0 overflow-hidden rounded-lg bg-card ring-1 ring-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:w-40"
+              >
+                <ProductIllustration slug={producto.slug} />
+              </Link>
 
-                  <div className="flex min-w-0 flex-1 flex-col gap-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant="secondary">{producto.servicioBase}</Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {producto.modalidadLabel}
-                      </span>
-                    </div>
-                    <Link
-                      href={`/productos/${producto.slug}`}
-                      className="font-semibold hover:underline"
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <p className="label-tec text-primary">
+                  {producto.servicioBase}
+                </p>
+                <Link
+                  href={`/productos/${producto.slug}`}
+                  className="font-heading text-base font-semibold tracking-[-0.02em] decoration-1 underline-offset-4 hover:underline"
+                >
+                  {producto.nombre}
+                </Link>
+                <p className="text-sm text-muted-foreground">
+                  {producto.modalidadLabel} · {producto.unidad}
+                </p>
+
+                <div className="mt-auto flex flex-wrap items-center gap-3 pt-3">
+                  <div className="flex items-center rounded-md border border-border">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-9 rounded-r-none"
+                      aria-label={`Quitar una unidad de ${producto.nombre}`}
+                      onClick={() => actualizar(producto.slug, cantidad - 1)}
                     >
-                      {producto.nombre}
-                    </Link>
-                    <p className="text-sm text-muted-foreground">
-                      {producto.unidad}
-                    </p>
-
-                    <div className="mt-auto flex flex-wrap items-center gap-3 pt-2">
-                      <div className="flex items-center rounded-md border">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-9 rounded-r-none"
-                          aria-label={`Quitar una unidad de ${producto.nombre}`}
-                          onClick={() => actualizar(producto.slug, cantidad - 1)}
-                        >
-                          <MinusIcon className="size-3.5" />
-                        </Button>
-                        <span className="w-10 text-center text-sm font-medium tabular-nums">
-                          {cantidad}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-9 rounded-l-none"
-                          aria-label={`Agregar una unidad de ${producto.nombre}`}
-                          onClick={() => actualizar(producto.slug, cantidad + 1)}
-                        >
-                          <PlusIcon className="size-3.5" />
-                        </Button>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-muted-foreground"
-                        onClick={() => quitar(producto.slug)}
-                      >
-                        <Trash2Icon className="size-3.5" />
-                        Eliminar
-                      </Button>
-                    </div>
+                      <MinusIcon className="size-3.5" />
+                    </Button>
+                    <span className="cifra w-10 text-center text-sm font-medium">
+                      {cantidad}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-9 rounded-l-none"
+                      aria-label={`Agregar una unidad de ${producto.nombre}`}
+                      onClick={() => actualizar(producto.slug, cantidad + 1)}
+                    >
+                      <PlusIcon className="size-3.5" />
+                    </Button>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 text-muted-foreground"
+                    onClick={() => quitar(producto.slug)}
+                  >
+                    <Trash2Icon className="size-3.5" />
+                    Eliminar
+                  </Button>
+                </div>
+              </div>
 
-                  <div className="text-right">
-                    <p className="text-lg font-semibold tabular-nums">
-                      {quetzales(importe)}
-                    </p>
-                    <p className="text-xs text-muted-foreground tabular-nums">
-                      {quetzales(producto.precio)} c/u
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="text-right">
+                <p className="cifra text-lg font-medium">
+                  {quetzales(importe)}
+                </p>
+                <p className="cifra mt-1 text-xs text-muted-foreground">
+                  {quetzales(producto.precio)} c/u
+                </p>
+              </div>
             </li>
           ))}
         </ul>
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <Card>
-            <CardContent className="flex flex-col gap-4">
-              <h2 className="text-lg font-semibold">Resumen del pedido</h2>
-              <dl className="flex flex-col gap-2 text-sm">
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Subtotal</dt>
-                  <dd className="tabular-nums">{quetzales(subtotal)}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">IVA (12%)</dt>
-                  <dd className="tabular-nums">{quetzales(iva)}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Entrega</dt>
-                  <dd className="text-primary">Digital · inmediata</dd>
-                </div>
-                <Separator className="my-1" />
-                <div className="flex justify-between text-lg font-semibold">
-                  <dt>Total</dt>
-                  <dd className="tabular-nums">{quetzales(total)}</dd>
-                </div>
-              </dl>
+          <div className="rounded-xl bg-card p-6 ring-1 ring-border">
+            <h2 className="label-tec text-muted-foreground">
+              Resumen del pedido
+            </h2>
 
-              <Button asChild size="lg">
+            <Resumen
+              className="mt-5"
+              subtotal={subtotal}
+              iva={iva}
+              total={total}
+              extra={[
+                {
+                  etiqueta: "Entrega",
+                  valor: (
+                    <span className="text-primary">Digital · inmediata</span>
+                  ),
+                },
+              ]}
+            />
+
+            <div className="mt-6 flex flex-col gap-2.5">
+              <Button asChild className="h-11">
                 <Link href="/checkout">Continuar al pago</Link>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="h-11">
                 <Link href="/productos">
                   <ArrowLeftIcon className="size-4" />
                   Seguir comprando
                 </Link>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </aside>
       </div>
     </div>

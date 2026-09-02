@@ -1,24 +1,34 @@
 import { cn } from "@/lib/utils";
 
+/**
+ * Marca: un paquete isométrico. La empresa vende software empaquetado, así que
+ * el símbolo es literalmente la caja, dibujada con trazo fino para que lea como
+ * un plano y no como el ícono de una aplicación.
+ */
 export function Logo({ className }: { className?: string }) {
   return (
-    <span className={cn("flex items-center gap-2", className)}>
-      <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-        <svg viewBox="0 0 24 24" className="size-4.5" aria-hidden="true">
+    <span className={cn("flex items-center gap-2.5", className)}>
+      <span className="grid size-8 place-items-center rounded-md border border-primary/30 bg-primary/8 text-primary">
+        <svg viewBox="0 0 24 24" className="size-5" aria-hidden="true">
           <path
-            d="M12 3.2 4.6 7.3v9.4L12 20.8l7.4-4.1V7.3L12 3.2Z"
+            d="M12 2.9 20.2 7.2v9.6L12 21.1 3.8 16.8V7.2L12 2.9Z"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.7"
+            strokeWidth="1.4"
             strokeLinejoin="round"
           />
           <path
-            d="M8.6 13.4 12 15.4l3.4-2v-3.9L12 7.6 8.6 9.5v3.9Z"
-            fill="currentColor"
+            d="M3.8 7.2 12 11.6l8.2-4.4M12 11.6v9.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinejoin="round"
+            opacity="0.55"
           />
+          <path d="M7.9 5.05 16.1 9.4v3.1" fill="none" stroke="currentColor" strokeWidth="1.4" opacity="0.35" />
         </svg>
       </span>
-      <span className="text-base font-semibold tracking-tight">
+      <span className="font-heading text-[0.975rem] font-semibold tracking-[-0.03em]">
         Quetzal<span className="text-primary">Dev</span>
       </span>
     </span>

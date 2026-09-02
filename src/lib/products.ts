@@ -16,6 +16,8 @@ export type Producto = {
   funciones: { titulo: string; detalle: string }[];
   beneficios: { titulo: string; detalle: string }[];
   especificaciones: { etiqueta: string; valor: string }[];
+  /** Tres datos cortos que se imprimen en la ficha de la tarjeta de catálogo. */
+  fichaRapida: { etiqueta: string; valor: string }[];
   entrega: string;
 };
 
@@ -108,6 +110,11 @@ export const productos: Producto[] = [
       { etiqueta: "Soporte", valor: "Correo y chat, 8x5, en español" },
       { etiqueta: "Tamaño de descarga", valor: "1.8 GB" },
     ],
+    fichaRapida: [
+      { etiqueta: "Versión", valor: "4.2 LTS" },
+      { etiqueta: "Usuarios", valor: "25" },
+      { etiqueta: "Entrega", valor: "Inmediata" },
+    ],
     entrega:
       "Recibes por correo la llave de licencia, el enlace de descarga del instalador y el acceso al portal de documentación.",
   },
@@ -194,6 +201,11 @@ export const productos: Producto[] = [
       { etiqueta: "Disponibilidad", valor: "99.9% garantizado por contrato" },
       { etiqueta: "Soporte", valor: "Chat en vivo, 8x6, en español" },
     ],
+    fichaRapida: [
+      { etiqueta: "Disponibilidad", valor: "99.9%" },
+      { etiqueta: "Productos", valor: "Ilimitados" },
+      { etiqueta: "Entrega", valor: "Instantánea" },
+    ],
     entrega:
       "Tu espacio de trabajo queda activo al instante: recibes la URL de tu tienda y las credenciales de administrador por correo.",
   },
@@ -279,6 +291,11 @@ export const productos: Producto[] = [
       { etiqueta: "Licencia", valor: "Perpetua, proyectos ilimitados" },
       { etiqueta: "Actualizaciones", valor: "12 meses incluidas" },
       { etiqueta: "Tamaño de descarga", valor: "240 MB" },
+    ],
+    fichaRapida: [
+      { etiqueta: "Versión", valor: "2.6" },
+      { etiqueta: "Plataformas", valor: "iOS + Android" },
+      { etiqueta: "Licencia", valor: "Perpetua" },
     ],
     entrega:
       "Recibes acceso al repositorio privado, el archivo ZIP de respaldo y la llave de licencia perpetua.",
